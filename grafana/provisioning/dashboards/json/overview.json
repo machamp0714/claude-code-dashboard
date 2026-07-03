@@ -1,0 +1,69 @@
+{
+  "uid": "cc-overview",
+  "title": "Claude Code - Overview",
+  "schemaVersion": 39,
+  "version": 1,
+  "time": {"from": "now-7d", "to": "now"},
+  "timezone": "browser",
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "累計コスト (USD)",
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum(claude_code_cost_usage_USD_total)", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "currencyUSD", "decimals": 2}}
+    },
+    {
+      "id": 2, "type": "stat", "title": "本日のコスト (USD)",
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum(increase(claude_code_cost_usage_USD_total[24h]))", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "currencyUSD", "decimals": 2}}
+    },
+    {
+      "id": 3, "type": "stat", "title": "セッション数 (7d)",
+      "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum(increase(claude_code_session_count_total[7d]))", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "short", "decimals": 0}}
+    },
+    {
+      "id": 4, "type": "stat", "title": "アクティブ時間 (7d)",
+      "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum(increase(claude_code_active_time_seconds_total[7d]))", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "s", "decimals": 0}}
+    },
+    {
+      "id": 5, "type": "timeseries", "title": "コスト推移 (日次)",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum(increase(claude_code_cost_usage_USD_total[1d]))", "refId": "A", "legendFormat": "cost/day"}],
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    },
+    {
+      "id": 6, "type": "timeseries", "title": "セッション数推移",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum(increase(claude_code_session_count_total[1d]))", "refId": "A", "legendFormat": "sessions/day"}],
+      "fieldConfig": {"defaults": {"unit": "short"}}
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "コード変更行数 (added/removed)",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum by (type) (increase(claude_code_lines_of_code_count_total[1d]))", "refId": "A", "legendFormat": "{{type}}"}],
+      "fieldConfig": {"defaults": {"unit": "short"}}
+    },
+    {
+      "id": 8, "type": "stat", "title": "コミット / PR (7d)",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "sum(increase(claude_code_commit_count_total[7d]))", "refId": "A", "legendFormat": "commits"},
+        {"expr": "sum(increase(claude_code_pull_request_count_total[7d]))", "refId": "B", "legendFormat": "PRs"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "short", "decimals": 0}}
+    }
+  ]
+}
