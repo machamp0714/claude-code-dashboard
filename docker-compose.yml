@@ -14,6 +14,9 @@ services:
     # wget/sh 等のバイナリを一切含まないため、exec 形式の docker healthcheck
     # (CMD wget ...) は実行不可（unhealthy 固定になる）。health_check
     # extension の疎通はホスト側から `curl :13133` で確認する（Step 5）。
+    depends_on:
+      loki:
+        condition: service_started
 
   prometheus:
     image: ${PROMETHEUS_IMAGE}
@@ -31,5 +34,16 @@ services:
       otelcol:
         condition: service_started
 
+  loki:
+    image: ${LOKI_IMAGE}
+    container_name: cc-loki
+    command: ["-config.file=/etc/loki/config.yaml"]
+    volumes:
+      - ./loki/config.yaml:/etc/loki/config.yaml:ro
+      - loki-data:/loki
+    ports:
+      - "${LOKI_PORT}:3100"
+
 volumes:
   prometheus-data:
+  loki-data:
