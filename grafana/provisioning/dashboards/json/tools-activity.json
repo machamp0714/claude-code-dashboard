@@ -29,8 +29,27 @@
       ]
     },
     {
+      "id": 5, "type": "piechart", "title": "スキル別 呼び出し回数",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [{"expr": "sum by (skill_name) (count_over_time({service_name=\"claude-code\"} | event_name=\"tool_result\" | tool_name=\"Skill\" | line_format \"{{.tool_parameters}}\" | json | skill_name != \"\" [$__range]))", "refId": "A", "legendFormat": "{{skill_name}}"}]
+    },
+    {
+      "id": 6, "type": "piechart", "title": "MCPツール別 呼び出し回数",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [{"expr": "sum by (mcp_server_name, mcp_tool_name) (count_over_time({service_name=\"claude-code\"} | event_name=\"tool_result\" | tool_name=\"mcp_tool\" | line_format \"{{.tool_parameters}}\" | json | mcp_server_name != \"\" [$__range]))", "refId": "A", "legendFormat": "{{mcp_server_name}}/{{mcp_tool_name}}"}]
+    },
+    {
+      "id": 7, "type": "logs", "title": "スキル / MCP 呼び出しログ (直近)",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 24},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [{"expr": "{service_name=\"claude-code\"} | event_name=\"tool_result\" | tool_name=~\"Skill|mcp_tool\" | line_format \"{{.tool_parameters}}\" | json | line_format \"[{{.tool_name}}] skill={{.skill_name}} mcp={{.mcp_server_name}}/{{.mcp_tool_name}}\"", "refId": "A"}],
+      "options": {"showTime": true, "wrapLogMessage": true, "dedupStrategy": "none"}
+    },
+    {
       "id": 4, "type": "logs", "title": "イベントログ (最新・メタデータ)",
-      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 16},
+      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 32},
       "datasource": {"type": "loki", "uid": "loki"},
       "targets": [{"expr": "{service_name=\"claude-code\"}", "refId": "A"}],
       "options": {"showTime": true, "wrapLogMessage": true, "dedupStrategy": "none"}
