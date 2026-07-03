@@ -20,8 +20,12 @@ make up                  # スタック起動
 （本リポジトリの Task 5 で自動マージ済みなら不要。）マージ後、新しく `claude` を起動すると
 テレメトリが送られる。
 
-本文テキストは記録しない設定。ツールのコマンド/ファイルパスまで見たい場合のみ
-`~/.claude/settings.json` の env に `"OTEL_LOG_TOOL_DETAILS": "1"` を追加する。
+本文テキストは記録しない設定。ツールのコマンド/ファイルパスまで見たい場合、
+または Grafana でスキル名・MCPサーバー名/ツール名を確認したい場合は
+`~/.claude/settings.json` の env に `"OTEL_LOG_TOOL_DETAILS": "1"` を追加する
+（`claude-settings-snippet.json` には反映済み）。有効化すると Bash の実行
+コマンド全文やファイルパスもテレメトリに記録されるようになる点に注意。
+設定変更後は新しく `claude` を起動し直す必要がある。
 
 ## 動作確認
 
