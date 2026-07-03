@@ -11,3 +11,9 @@ logs:
 
 ps:
 	docker compose ps
+
+smoke:
+	bash scripts/smoke.sh
+
+names:
+	@curl -s 'http://localhost:9090/api/v1/label/__name__/values' | tr ',' '\n' | grep claude_code || echo "no claude_code metrics yet"
