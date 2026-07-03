@@ -1,0 +1,35 @@
+services:
+  otelcol:
+    image: ${OTELCOL_IMAGE}
+    container_name: cc-otelcol
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./otelcol/config.yaml:/etc/otelcol/config.yaml:ro
+    ports:
+      - "${OTLP_GRPC_PORT}:4317"
+      - "${OTLP_HTTP_PORT}:4318"
+      - "${OTELCOL_METRICS_PORT}:8889"
+      - "${OTELCOL_HEALTH_PORT}:13133"
+    # NOTE: otel/opentelemetry-collector-contrib イメージは distroless で
+    # wget/sh 等のバイナリを一切含まないため、exec 形式の docker healthcheck
+    # (CMD wget ...) は実行不可（unhealthy 固定になる）。health_check
+    # extension の疎通はホスト側から `curl :13133` で確認する（Step 5）。
+
+  prometheus:
+    image: ${PROMETHEUS_IMAGE}
+    container_name: cc-prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=${PROMETHEUS_RETENTION}"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "${PROMETHEUS_PORT}:9090"
+    depends_on:
+      otelcol:
+        condition: service_started
+
+volumes:
+  prometheus-data:
