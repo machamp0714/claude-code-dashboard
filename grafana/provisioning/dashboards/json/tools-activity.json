@@ -1,0 +1,39 @@
+{
+  "uid": "cc-tools-activity",
+  "title": "Claude Code - Tools & Activity",
+  "schemaVersion": 39,
+  "version": 1,
+  "time": {"from": "now-24h", "to": "now"},
+  "timezone": "browser",
+  "panels": [
+    {
+      "id": 1, "type": "timeseries", "title": "コード編集ツール 決定 (accept/reject)",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum by (decision)(max_over_time(claude_code_code_edit_tool_decision_total[$__interval]))", "refId": "A", "legendFormat": "{{decision}}"}],
+      "fieldConfig": {"defaults": {"unit": "short"}}
+    },
+    {
+      "id": 2, "type": "piechart", "title": "ツール別 実行回数 (Loki, 期間)",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [{"expr": "sum by (tool_name) (count_over_time({service_name=\"claude-code\"} | event_name=\"tool_result\" [$__range]))", "refId": "A", "legendFormat": "{{tool_name}}"}]
+    },
+    {
+      "id": 3, "type": "timeseries", "title": "API エラー / 拒否 (Loki)",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [
+        {"expr": "sum(count_over_time({service_name=\"claude-code\"} | event_name=\"api_error\" [5m]))", "refId": "A", "legendFormat": "api_error"},
+        {"expr": "sum(count_over_time({service_name=\"claude-code\"} | event_name=\"api_refusal\" [5m]))", "refId": "B", "legendFormat": "api_refusal"}
+      ]
+    },
+    {
+      "id": 4, "type": "logs", "title": "イベントログ (最新・メタデータ)",
+      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 16},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [{"expr": "{service_name=\"claude-code\"}", "refId": "A"}],
+      "options": {"showTime": true, "wrapLogMessage": true, "dedupStrategy": "none"}
+    }
+  ]
+}
