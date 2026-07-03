@@ -1,10 +1,13 @@
-.PHONY: up down logs ps
+.PHONY: up down reload logs ps
 
 up:
 	docker compose up -d
 
 down:
 	docker compose down
+
+reload:
+	docker compose up -d --force-recreate
 
 logs:
 	docker compose logs -f --tail=100
