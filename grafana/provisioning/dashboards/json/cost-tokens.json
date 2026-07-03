@@ -1,0 +1,55 @@
+{
+  "uid": "cc-cost-tokens",
+  "title": "Claude Code - Cost & Tokens",
+  "schemaVersion": 39,
+  "version": 1,
+  "time": {"from": "now-14d", "to": "now"},
+  "timezone": "browser",
+  "panels": [
+    {
+      "id": 1, "type": "timeseries", "title": "コスト (日次・累計)",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "sum(max_over_time(claude_code_cost_usage_USD_total[$__interval]))", "refId": "A", "legendFormat": "cost/day"},
+        {"expr": "sum(max_over_time(claude_code_cost_usage_USD_total[$__range]))", "refId": "B", "legendFormat": "cumulative"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    },
+    {
+      "id": 2, "type": "piechart", "title": "コスト内訳 (モデル別・期間合計)",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum by (model) (max_over_time(claude_code_cost_usage_USD_total[$__range]))", "refId": "A", "legendFormat": "{{model}}"}],
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    },
+    {
+      "id": 3, "type": "timeseries", "title": "トークン使用量 (type 別・日次)",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum by (type) (max_over_time(claude_code_token_usage_tokens_total[$__interval]))", "refId": "A", "legendFormat": "{{type}}"}],
+      "fieldConfig": {"defaults": {"unit": "short", "custom": {"stacking": {"mode": "normal"}}}}
+    },
+    {
+      "id": 4, "type": "timeseries", "title": "トークン使用量 (モデル別・日次)",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum by (model) (max_over_time(claude_code_token_usage_tokens_total[$__interval]))", "refId": "A", "legendFormat": "{{model}}"}],
+      "fieldConfig": {"defaults": {"unit": "short"}}
+    },
+    {
+      "id": 5, "type": "stat", "title": "キャッシュ読取比率 (期間)",
+      "gridPos": {"h": 6, "w": 12, "x": 0, "y": 16},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum(max_over_time(claude_code_token_usage_tokens_total{type=\"cacheRead\"}[$__range])) / sum(max_over_time(claude_code_token_usage_tokens_total[$__range]))", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "percentunit", "decimals": 2}}
+    },
+    {
+      "id": 6, "type": "timeseries", "title": "コスト (query_source 別: main/subagent)",
+      "gridPos": {"h": 6, "w": 12, "x": 12, "y": 16},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum by (query_source) (max_over_time(claude_code_cost_usage_USD_total[$__interval]))", "refId": "A", "legendFormat": "{{query_source}}"}],
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    }
+  ]
+}
