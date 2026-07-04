@@ -50,6 +50,20 @@
       "datasource": {"type": "prometheus", "uid": "prometheus"},
       "targets": [{"expr": "sum by (query_source) (max_over_time(claude_code_cost_usage_USD_total[$__interval]))", "refId": "A", "legendFormat": "{{query_source}}"}],
       "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    },
+    {
+      "id": 7, "type": "piechart", "title": "スキル別 コスト内訳 (期間)",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 22},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum by (skill_name) (max_over_time(claude_code_cost_usage_USD_total{skill_name!=\"\"}[$__range]))", "refId": "A", "legendFormat": "{{skill_name}}"}],
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    },
+    {
+      "id": 8, "type": "piechart", "title": "サブエージェント種別 コスト内訳 (期間)",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 22},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum by (agent_name) (max_over_time(claude_code_cost_usage_USD_total{agent_name!=\"\"}[$__range]))", "refId": "A", "legendFormat": "{{agent_name}}"}],
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
     }
   ]
 }

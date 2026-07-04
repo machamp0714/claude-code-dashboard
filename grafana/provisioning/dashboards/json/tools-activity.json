@@ -29,6 +29,13 @@
       ]
     },
     {
+      "id": 8, "type": "timeseries", "title": "ツール別 失敗回数 (期間)",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [{"expr": "sum by (tool_name) (count_over_time({service_name=\"claude-code\"} | event_name=\"tool_result\" | success=\"false\" [$__interval]))", "refId": "A", "legendFormat": "{{tool_name}}"}],
+      "fieldConfig": {"defaults": {"unit": "short"}}
+    },
+    {
       "id": 5, "type": "piechart", "title": "スキル別 呼び出し回数",
       "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
       "datasource": {"type": "loki", "uid": "loki"},
@@ -48,8 +55,21 @@
       "options": {"showTime": true, "wrapLogMessage": true, "dedupStrategy": "none"}
     },
     {
+      "id": 9, "type": "bargauge", "title": "ツール別 実行時間 P95 (ms, 期間)",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 32},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [{"expr": "quantile_over_time(0.95, {service_name=\"claude-code\"} | event_name=\"tool_result\" | unwrap duration_ms [$__range]) by (tool_name)", "refId": "A", "legendFormat": "{{tool_name}}"}],
+      "fieldConfig": {"defaults": {"unit": "ms"}}
+    },
+    {
+      "id": 10, "type": "piechart", "title": "サブエージェント種別 呼び出し回数",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 32},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [{"expr": "sum by (subagent_type) (count_over_time({service_name=\"claude-code\"} | event_name=\"tool_result\" | tool_name=\"Agent\" | line_format \"{{.tool_parameters}}\" | json | subagent_type != \"\" [$__range]))", "refId": "A", "legendFormat": "{{subagent_type}}"}]
+    },
+    {
       "id": 4, "type": "logs", "title": "イベントログ (最新・メタデータ)",
-      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 32},
+      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 40},
       "datasource": {"type": "loki", "uid": "loki"},
       "targets": [{"expr": "{service_name=\"claude-code\"}", "refId": "A"}],
       "options": {"showTime": true, "wrapLogMessage": true, "dedupStrategy": "none"}
